@@ -1,5 +1,6 @@
 from MAF import MAF;
-from os import mkdir;
+from os import listdir, mkdir;
+from os.path import join;
 from whoosh.fields import Schema, STORED, TEXT;
 from whoosh.index import create_in, EmptyIndexError, open_dir;
 
@@ -24,6 +25,10 @@ class MAFIndex:
     fd = MAF(filename);
     self.writer.add_document(id=fd.filename, url=fd.url, date=fd.date, title=unicode(fd.title), content=unicode(fd.read_index(), fd.charset));
     fd.close();
+
+  def add_path(self, path):
+    for filename in listdir(path):
+      self.add(join(path,filename));
 
   def commit(self):
     if (self.writer is not None):

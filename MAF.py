@@ -10,6 +10,10 @@ class MAF:
   def __init__(self, filename):
     self.filename = basename(filename);
     self.fd = zipfile.ZipFile(filename);
+    self.generate_file_list();
+    self.parse_rdf();
+
+  def generate_file_list(self):
     self.files = [ x.filename for x in self.fd.filelist ];
     try:
       self.files.remove("index.dat");
@@ -19,6 +23,8 @@ class MAF:
       self.files.remove("index.rdf");
     except ValueError:
       pass;
+
+  def parse_rdf(self):
     fdi = self.fd.open("index.rdf", mode="r");
     root = et.fromstring(fdi.read().replace("&","&amp;"));
     fdi.close();
