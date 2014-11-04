@@ -7,6 +7,7 @@ class MAF:
   namespace = "{http://maf.mozdev.org/metadata/rdf#}";
 
   def __init__(self, filename):
+    self.filename = filename;
     self.fd = zipfile.ZipFile(filename);
     self.files = [ x.filename for x in self.fd.filelist ];
     try:
@@ -36,6 +37,12 @@ class MAF:
 
   def open_index(self):
     return self.fd.open(self.index);
+
+  def read_index(self):
+    fd = self.fd.open(self.index);
+    content = fd.read();
+    fd.close();
+    return content;
 
   def close(self):
     self.fd.close();
