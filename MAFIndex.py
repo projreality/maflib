@@ -22,7 +22,7 @@ class MAFIndex:
       self.writer = self.index.writer();
 
     fd = MAF(filename);
-    self.writer.add_document(id=filename, url=fd.url, date=fd.date, title=unicode(fd.title), content=unicode(fd.read_index(), fd.charset));
+    self.writer.add_document(id=fd.filename, url=fd.url, date=fd.date, title=unicode(fd.title), content=unicode(fd.read_index(), fd.charset));
     fd.close();
 
   def commit(self):

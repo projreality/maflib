@@ -1,4 +1,5 @@
 from dateutil import parser;
+from os.path import basename;
 import xml.etree.ElementTree as et;
 import zipfile;
 
@@ -7,7 +8,7 @@ class MAF:
   namespace = "{http://maf.mozdev.org/metadata/rdf#}";
 
   def __init__(self, filename):
-    self.filename = filename;
+    self.filename = basename(filename);
     self.fd = zipfile.ZipFile(filename);
     self.files = [ x.filename for x in self.fd.filelist ];
     try:
