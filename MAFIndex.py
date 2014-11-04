@@ -3,6 +3,7 @@ from os import listdir, mkdir;
 from os.path import join;
 from whoosh.fields import Schema, STORED, TEXT;
 from whoosh.index import create_in, EmptyIndexError, open_dir;
+from whoosh.qparser import QueryParser;
 
 class MAFIndex:
 
@@ -17,6 +18,15 @@ class MAFIndex:
       self.index = create_in(path, schema);
 
     self.writer = None;
+    self.searcher = None;
+    self.parser = QueryParser("content", self.index.schema);
+
+  def __del__(self):
+    self.index.close();
+    if (self.writer is not None):
+      self.writer.close();
+    if (self.searcher is not None):
+      self.searcher.close();
 
   def add(self, filename):
     if (self.writer is None):
@@ -35,3 +45,12 @@ class MAFIndex:
     if (self.writer is not None):
       self.writer.commit();
       self.writer = None;
+      if (self.searcher is not None):
+        self.searcher.close();
+        self.searcher = None;
+
+  def search(self, query):
+    if (self.searcher is None):
+      self.searcher = self.index.searcher();
+
+    return self.searcher.search(self.parser.parse(unicode(query)));
