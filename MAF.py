@@ -8,6 +8,15 @@ class MAF:
 
   def __init__(self, filename):
     self.fd = zipfile.ZipFile(filename);
+    self.files = [ x.filename for x in self.fd.filelist ];
+    try:
+      self.files.remove("index.dat");
+    except ValueError:
+      pass;
+    try:
+      self.files.remove("index.rdf");
+    except ValueError:
+      pass;
     fdi = self.fd.open("index.rdf", mode="r");
     root = et.fromstring(fdi.read().replace("&","&amp;"));
     fdi.close();
@@ -22,15 +31,11 @@ class MAF:
   def __del__(self):
     self.fd.close();
 
-  def filelist(self):
-    files = [ x.orig_filename for x in self.fd.filelist ];
-    try:
-      files.remove("index.dat");
-    except ValueError:
-      pass;
-    try:
-      files.remove("index.rdf");
-    except ValueError:
-      pass;
-    return files;
+  def open(self, filename):
+    return self.fd.open(filename);
 
+  def open_index(self):
+    return self.fd.open(self.index);
+
+  def close(self):
+    self.fd.close();
