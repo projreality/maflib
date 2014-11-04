@@ -28,6 +28,7 @@ class MAFIndex:
 
   def add_path(self, path):
     for filename in listdir(path):
+      print filename;
       self.add(join(path,filename));
 
   def commit(self):

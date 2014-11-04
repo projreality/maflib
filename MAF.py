@@ -1,5 +1,5 @@
 from dateutil import parser;
-from os.path import basename;
+from os.path import basename, join;
 import xml.etree.ElementTree as et;
 import zipfile;
 
@@ -14,7 +14,13 @@ class MAF:
     self.parse_rdf();
 
   def generate_file_list(self):
-    self.files = [ x.filename for x in self.fd.filelist ];
+    if (self.fd.filelist[0].filename[-1] == "/"):
+      self.subdir = self.fd.filelist[0].filename[:-1];
+      subdir_length = len(self.subdir) + 1;
+    else:
+      self.subdir = "";
+      subdir_length = 0;
+    self.files = [ x.filename[subdir_length:] for x in self.fd.filelist ];
     try:
       self.files.remove("index.dat");
     except ValueError:
@@ -25,7 +31,7 @@ class MAF:
       pass;
 
   def parse_rdf(self):
-    fdi = self.fd.open("index.rdf", mode="r");
+    fdi = self.fd.open(join(self.subdir,"index.rdf"), mode="r");
     root = et.fromstring(fdi.read().replace("&","&amp;"));
     fdi.close();
     rdfns = root.tag[:-3];
@@ -40,13 +46,13 @@ class MAF:
     self.fd.close();
 
   def open(self, filename):
-    return self.fd.open(filename);
+    return self.fd.open(join(self.subdir,filename));
 
   def open_index(self):
-    return self.fd.open(self.index);
+    return self.fd.open(join(self.subdir,self.index));
 
   def read_index(self):
-    fd = self.fd.open(self.index);
+    fd = self.fd.open(join(self.subdir,self.index));
     content = fd.read();
     fd.close();
     return content;
