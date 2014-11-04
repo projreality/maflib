@@ -22,11 +22,11 @@ class MAFIndex:
     self.parser = QueryParser("content", self.index.schema);
 
   def __del__(self):
-    self.index.close();
     if (self.writer is not None):
-      self.writer.close();
+      self.writer.cancel();
     if (self.searcher is not None):
       self.searcher.close();
+    self.index.close();
 
   def add(self, filename):
     if (self.writer is None):
@@ -38,8 +38,9 @@ class MAFIndex:
 
   def add_path(self, path):
     for filename in listdir(path):
-      print filename;
-      self.add(join(path,filename));
+      if (filename[-5:] == ".maff"):
+        print(filename);
+        self.add(join(path,filename));
 
   def commit(self):
     if (self.writer is not None):
@@ -48,6 +49,11 @@ class MAFIndex:
       if (self.searcher is not None):
         self.searcher.close();
         self.searcher = None;
+
+  def cancel(self):
+    if (self.writer is not None):
+      self.writer.cancel();
+      self.writer = None;
 
   def search(self, query):
     if (self.searcher is None):
