@@ -37,10 +37,17 @@ class MAFIndex:
     fd.close();
 
   def add_path(self, path):
+    i = 0;
     for filename in listdir(path):
       if (filename[-5:] == ".maff"):
         print(filename);
-        self.add(join(path,filename));
+        try:
+          self.add(join(path,filename));
+        except:
+          pass;
+        i = i + 1;
+        if (i % 1000 == 0):
+          self.commit();
 
   def commit(self):
     if (self.writer is not None):
