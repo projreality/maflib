@@ -19,7 +19,7 @@ class MAFIndex:
 
     self.writer = None;
     self.searcher = None;
-    self.parser = QueryParser("content", self.index.schema);
+    self.parser = QueryParser("content", schema=self.index.schema);
 
   def __del__(self):
     if (self.writer is not None):
@@ -62,8 +62,8 @@ class MAFIndex:
       self.writer.cancel();
       self.writer = None;
 
-  def search(self, query):
+  def search(self, query, limit=10):
     if (self.searcher is None):
       self.searcher = self.index.searcher();
 
-    return self.searcher.search(self.parser.parse(unicode(query)));
+    return self.searcher.search(self.parser.parse(unicode(query)), limit=limit);
