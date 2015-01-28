@@ -1,14 +1,16 @@
 from MAF import MAF;
 from os import listdir, mkdir;
 from os.path import join;
-from whoosh.fields import Schema, STORED, TEXT;
+from tld import get_tld;
+from urlparse import urlsplit;
+from whoosh.fields import DATETIME, ID, Schema, STORED, TEXT;
 from whoosh.index import create_in, EmptyIndexError, open_dir;
 from whoosh.qparser import QueryParser;
 
 class MAFIndex:
 
   def __init__(self, path):
-    schema = Schema(id=STORED, url=STORED, date=STORED, title=TEXT(stored=True), content=TEXT);
+    schema = Schema(id=STORED, url=ID, fqdn=ID, dn=ID, date=DATETIME, title=TEXT(stored=True), content=TEXT);
     try:
       self.index = open_dir(path);
     except IOError:
@@ -34,7 +36,12 @@ class MAFIndex:
       self.writer = self.index.writer();
 
     fd = MAF(filename);
-    self.writer.add_document(id=fd.filename, url=fd.url, date=fd.date, title=unicode(fd.title), content=unicode(fd.read_index(), fd.charset));
+    url = fd.url;
+    fqdn = urlsplit(url).netloc;
+    dn = get_tld(url);
+
+    self.writer.add_document(id=fd.filename, url=unicode(url), fqdn=unicode(fqdn), dn=unicode(dn), date=fd.date, title=unicode(fd.title), content=unicode(fd.read_index(), fd.charset));
+
     fd.close();
 
   def add_path(self, path):
