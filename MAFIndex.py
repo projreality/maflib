@@ -75,7 +75,8 @@ class MAFIndex:
       self.searcher = self.index.searcher();
 
     if ((self.parser is None) or ((default_field is not None) and (self.default_field != default_field))):
-      self.default_field = default_field;
+      if (default_field is not None):
+        self.default_field = default_field;
       self.parser = QueryParser(default_field, schema=self.index.schema);
 
     return self.searcher.search(self.parser.parse(unicode(query)), limit=limit);
