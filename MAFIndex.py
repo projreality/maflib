@@ -6,6 +6,7 @@ from urlparse import urlsplit;
 from whoosh.fields import DATETIME, ID, Schema, STORED, TEXT;
 from whoosh.index import create_in, EmptyIndexError, open_dir;
 from whoosh.qparser import QueryParser;
+from whoosh.qparser.dateparse import DateParserPlugin;
 
 class MAFIndex:
 
@@ -78,5 +79,6 @@ class MAFIndex:
       if (default_field is not None):
         self.default_field = default_field;
       self.parser = QueryParser(default_field, schema=self.index.schema);
+      self.parser.add_plugin(DateParserPlugin(free=True));
 
     return self.searcher.search(self.parser.parse(unicode(query)), limit=limit);
