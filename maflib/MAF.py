@@ -60,6 +60,12 @@ class MAF:
     fd = self.fd.open(join(self.subdir,self.index));
     content = fd.read();
     fd.close();
+    if (type(content) != unicode):
+      try:
+        content = unicode(content, self.charset);
+      except LookupError:
+        content = unicode(content, "UTF-8");
+
     return content;
 
   def close(self):
