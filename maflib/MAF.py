@@ -31,7 +31,10 @@ class MAF:
       pass;
 
   def parse_rdf(self):
-    fdi = self.fd.open(join(self.subdir,"index.rdf"), mode="r");
+    try:
+      fdi = self.fd.open(join(self.subdir,"index.rdf"), mode="r");
+    except KeyError:
+      raise InvalidMAFFileException;
     root = et.fromstring(fdi.read().replace("&","&amp;"));
     fdi.close();
     rdfns = root.tag[:-3];
@@ -70,3 +73,6 @@ class MAF:
 
   def close(self):
     self.fd.close();
+
+class InvalidMAFFileException(Exception):
+  pass;
