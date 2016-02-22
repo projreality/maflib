@@ -3,7 +3,7 @@ from os import listdir, mkdir;
 from os.path import join;
 from tld import get_tld;
 from urlparse import urlsplit;
-from whoosh.fields import DATETIME, ID, Schema, TEXT;
+from whoosh.fields import DATETIME, ID, Schema, STORED, TEXT;
 from whoosh.index import create_in, EmptyIndexError, open_dir;
 from whoosh.qparser import QueryParser;
 from whoosh.qparser.dateparse import DateParserPlugin;
@@ -11,7 +11,7 @@ from whoosh.qparser.dateparse import DateParserPlugin;
 class MAFIndex:
 
   def __init__(self, path):
-    schema = Schema(id=STORED, url=ID, fqdn=ID, dn=ID, date=DATETIME, title=TEXT(stored=True), content=TEXT);
+    schema = Schema(id=STORED, url=ID, fqdn=ID, dn=ID, date=DATETIME(stored=True, sortable=True), title=TEXT(stored=True), content=TEXT);
     try:
       self.index = open_dir(path);
     except IOError:
@@ -54,6 +54,7 @@ class MAFIndex:
         i = i + 1;
         if (i % 1000 == 0):
           self.commit();
+    self.commit();
 
   def commit(self):
     if (self.writer is not None):
