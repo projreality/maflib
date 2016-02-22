@@ -3,7 +3,7 @@ from os import listdir, mkdir;
 from os.path import join;
 from tld import get_tld;
 from urlparse import urlsplit;
-from whoosh.fields import DATETIME, ID, Schema, STORED, TEXT;
+from whoosh.fields import DATETIME, ID, Schema, TEXT;
 from whoosh.index import create_in, EmptyIndexError, open_dir;
 from whoosh.qparser import QueryParser;
 from whoosh.qparser.dateparse import DateParserPlugin;
@@ -41,7 +41,7 @@ class MAFIndex:
     fqdn = urlsplit(url).netloc;
     dn = get_tld(url);
 
-    self.writer.add_document(id=fd.filename, url=unicode(url), fqdn=unicode(fqdn), dn=unicode(dn), date=fd.date, title=unicode(fd.title), content=unicode(fd.read_index(), fd.charset));
+    self.writer.add_document(id=unicode(fd.filename, "UTF-8"), url=unicode(url, "UTF-8"), fqdn=unicode(fqdn, "UTF-8"), dn=unicode(dn, "UTF-8"), date=fd.date, title=fd.title, content=unicode(fd.read_index(), "UTF-8"));
 
     fd.close();
 
@@ -50,10 +50,7 @@ class MAFIndex:
     for filename in listdir(path):
       if (filename[-5:] == ".maff"):
         print(filename);
-        try:
-          self.add(join(path,filename));
-        except:
-          pass;
+        self.add(join(path,filename));
         i = i + 1;
         if (i % 1000 == 0):
           self.commit();

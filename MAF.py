@@ -41,6 +41,11 @@ class MAF:
     self.date = parser.parse(descr.find(self.namespace + "archivetime").attrib[rdfns + "resource"]);
     self.index = descr.find(self.namespace + "indexfilename").attrib[rdfns + "resource"];
     self.charset = descr.find(self.namespace + "charset").attrib[rdfns + "resource"];
+    if (type(self.title) != unicode):
+      try:
+        self.title = unicode(self.title, self.charset);
+      except LookupError:
+        self.title = unicode(self.title, "UTF-8");
 
   def __del__(self):
     self.fd.close();
