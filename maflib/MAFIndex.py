@@ -41,7 +41,7 @@ class MAFIndex:
     fqdn = urlsplit(url).netloc;
     dn = get_tld(url);
 
-    self.writer.add_document(id=unicode(fd.filename, "UTF-8"), url=unicode(url, "UTF-8"), fqdn=unicode(fqdn, "UTF-8"), dn=unicode(dn, "UTF-8"), date=fd.date, title=fd.title, content=unicode(fd.read_index(), "UTF-8"));
+    self.writer.add_document(id=unicode(fd.filename, "UTF-8"), url=unicode(url, "UTF-8"), fqdn=unicode(fqdn, "UTF-8"), dn=unicode(dn, "UTF-8"), date=fd.date, title=fd.title, content=fd.read_index());
 
     fd.close();
 
@@ -49,8 +49,11 @@ class MAFIndex:
     i = 0;
     for filename in listdir(path):
       if (filename[-5:] == ".maff"):
-        print(filename);
-        self.add(join(path,filename));
+        try:
+          self.add(join(path,filename));
+          print(filename);
+        except Exception as e:
+          print("-%s (%s: %s)" % ( filename, e.__class__.__name__, e ));
         i = i + 1;
         if (i % 1000 == 0):
           self.commit();
