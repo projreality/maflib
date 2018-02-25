@@ -11,7 +11,7 @@ from whoosh.qparser.dateparse import DateParserPlugin;
 class MAFIndex:
 
   def __init__(self, path):
-    schema = Schema(id=STORED, url=ID, fqdn=ID, dn=ID, date=DATETIME(stored=True, sortable=True), title=TEXT(stored=True), content=TEXT);
+    schema = Schema(id=STORED, url=ID(stored=True), fqdn=ID, dn=ID, date=DATETIME(stored=True, sortable=True), title=TEXT(stored=True), content=TEXT);
     try:
       self.index = open_dir(path);
     except IOError:
