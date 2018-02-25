@@ -11,7 +11,7 @@ from whoosh.qparser.dateparse import DateParserPlugin;
 class MAFIndex:
 
   def __init__(self, path):
-    schema = Schema(id=STORED, url=ID(stored=True), fqdn=ID, dn=ID, date=DATETIME(stored=True, sortable=True), title=TEXT(stored=True), content=TEXT);
+    schema = Schema(id=ID(unique=True, stored=True), url=ID(stored=True), fqdn=ID, dn=ID, date=DATETIME(stored=True, sortable=True), title=TEXT(stored=True), content=TEXT);
     try:
       self.index = open_dir(path);
     except IOError:
@@ -32,26 +32,37 @@ class MAFIndex:
       self.searcher.close();
     self.index.close();
 
-  def add(self, filename):
+  def add(self, filename, update=False):
     if (self.writer is None):
       self.writer = self.index.writer();
+
+    exists = not self.search("id:%s" % ( filename, )).is_empty();
+    if (exists and not update):
+      return False;
 
     fd = MAF(filename);
     url = fd.url;
     fqdn = urlsplit(url).netloc;
     dn = get_tld(url);
 
-    self.writer.add_document(id=unicode(fd.filename, "UTF-8"), url=unicode(url, "UTF-8"), fqdn=unicode(fqdn, "UTF-8"), dn=unicode(dn, "UTF-8"), date=fd.date, title=fd.title, content=fd.read_index());
+    if (exists):
+      self.writer.update_document(id=unicode(filename, "UTF-8"), url=unicode(url, "UTF-8"), fqdn=unicode(fqdn, "UTF-8"), dn=dn, date=fd.date, title=fd.title, content=fd.read_index());
+    else:
+      self.writer.add_document(id=unicode(filename, "UTF-8"), url=unicode(url, "UTF-8"), fqdn=unicode(fqdn, "UTF-8"), dn=dn, date=fd.date, title=fd.title, content=fd.read_index());
 
     fd.close();
+    return True;
 
-  def add_path(self, path):
+  def add_path(self, path, update=False):
     i = 0;
     for filename in listdir(path):
       if (filename[-5:] == ".maff"):
         try:
-          self.add(join(path,filename));
-          print(filename);
+          res = self.add(join(path,filename), update);
+          if (res):
+            print(filename);
+          else:
+            print("-%s (already in index)" % ( filename, ));
         except Exception as e:
           print("-%s (%s: %s)" % ( filename, e.__class__.__name__, e ));
         i = i + 1;
