@@ -55,7 +55,9 @@ class MAFIndex:
 
   def add_path(self, path, update=False):
     i = 0;
-    for filename in listdir(path):
+    files = listdir(path);
+    files.sort();
+    for filename in files:
       if (filename[-5:] == ".maff"):
         try:
           res = self.add(join(path,filename), update);
