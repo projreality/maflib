@@ -53,24 +53,36 @@ class MAFIndex:
     fd.close();
     return True;
 
-  def add_path(self, path, update=False):
+  def add_path(self, path, update=False, verbose=False):
     i = 0;
     files = listdir(path);
     files.sort();
+    added = [ ];
+    skipped = [ ];
+    error = [ ];
     for filename in files:
       if (filename[-5:] == ".maff"):
         try:
-          res = self.add(join(path,filename), update);
+          fname = join(path, filename);
+          res = self.add(fname, update);
           if (res):
-            print(filename);
+            added.append(fname);
+            if (verbose):
+              print(fname);
           else:
-            print("-%s (already in index)" % ( filename, ));
+            skipped.append(fname);
+            if (verbose):
+              print("-%s (already in index)" % ( fname, ));
         except Exception as e:
-          print("-%s (%s: %s)" % ( filename, e.__class__.__name__, e ));
+          error.append(fname);
+          if (verbose):
+            print("-%s (%s: %s)" % ( fname, e.__class__.__name__, e ));
         i = i + 1;
         if (i % 1000 == 0):
           self.commit();
     self.commit();
+
+    return ( added, skipped, error );
 
   def commit(self):
     if (self.writer is not None):
