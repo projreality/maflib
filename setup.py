@@ -10,7 +10,7 @@ setup(name              = "maflib",
       author            = "Samuel Li",
       author_email      = "sam@projreality.com",
       url               = "http://www.projreality.com/maflib",
-      description       = "Library for read, manipulating, and indexing Mozilla Archive Format (MAF) files",
+      description       = "Library for reading and manipulating Mozilla Archive Format (MAF) files",
       long_description  = long_description,
       license           = "https://www.gnu.org/licenses/lgpl.html"
      );
