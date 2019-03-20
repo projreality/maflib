@@ -1,5 +1,8 @@
 from dateutil import parser;
+from os import listdir;
 from os.path import basename, join;
+import tempfile;
+import webbrowser;
 import xml.etree.ElementTree as et;
 import zipfile;
 
@@ -70,6 +73,16 @@ class MAF:
         content = unicode(content, "UTF-8");
 
     return content;
+
+  def show(self):
+    tempdir = tempfile.mkdtemp();
+    self.fd.extractall(tempdir);
+
+    subdir = listdir(tempdir)[0];
+    path = join(tempdir, subdir, "index.html");
+    webbrowser.open(path);
+
+    return tempdir;
 
   def close(self):
     self.fd.close();
